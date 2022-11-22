@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    command: >
+      sh -c "python /code/manage.py makemigrations &&
+             python /code/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=innotter
+      - POSTGRES_PASSWORD=innotter
+      - POSTGRES_DB=innotter_dev
+
+#  redis:
+#    image: redis:alpine
+#  celery:
+#    restart: always
+#    build:
+#      context: .
+#    command: celery -A mailing_list.celery worker --pool=solo --loglevel=info
+#    volumes:
+#      - ./mailing_list:/mailing_list
+#    env_file:
+#      - ./.env
+#    depends_on:
+#      - db
+#      - redis
+#      - web
+
+volumes:
+  postgres_data:
